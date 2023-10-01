@@ -19,7 +19,9 @@ jobs:
     - name: Copy custom tools
       run: cp -rf tools/* ardupilot/Tools/scripts/
     - name: Copy repo based secrets as defines
-      run: tools/append_secure.sh
+      run: |
+        chmod +x tools/append_secure.sh
+        tools/append_secure.sh
     - name: Apply local patches
       run: find "$(readlink -f patches/)" -type f -name "*.patch" | xargs -I {} sh -c 'echo "Applying {}"; git -C ardupilot/ apply {}'
 
