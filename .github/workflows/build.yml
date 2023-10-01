@@ -8,26 +8,16 @@ jobs:
 
   build_custom_boards:
     runs-on: ubuntu-20.04
+    environment: production
     container: ardupilot/ardupilot-dev-chibios-clang:latest
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: "recursive"
 
-    - name: Install xmllint
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y jq
-    # https://stackoverflow.com/a/75789640/5605489
-    - name: Expose github environment as shell variables
-      env:
-        VARS_CONTEXT: ${{ toJson(vars) }}
-      run: |
-        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
-        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
-        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-        to_envs() { jq -r "to_entries[] | \"\(.key)<<$EOF\n\(.value)\n$EOF\n\""; }
-        echo "$VARS_CONTEXT" | to_envs >> $GITHUB_ENV
+    - uses: oNaiPs/secrets-to-env-action@v1
+      with:
+        secrets: ${{ toJSON(vars) }}
     - name: Test
       run: echo "Is it working? $SECURE_CUSTOM_OPENDRONEID_DESCRIPTION"
 
