@@ -37,12 +37,11 @@ jobs:
       working-directory: ardupilot/
       run: |
         . .github/workflows/ccache.env
-    - name: test ${{matrix.config}} ${{ matrix.toolchain }}
+    - name: Build
       shell: bash
       working-directory: ardupilot/
       run: |
         git config --global --add safe.directory ${GITHUB_WORKSPACE}/ardupilot/
-        source ~/.bash_profile
         BUILDROOT="/tmp/all.build"
         PATH="/github/home/.local/bin:$PATH"
         chmod +x Tools/scripts/custom_build.sh
