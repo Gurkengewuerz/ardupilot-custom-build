@@ -12,10 +12,11 @@ mkdir -p $dest_dir
 find "$src_dir" -type f -name "*.hex" -print0 | while IFS= read -r -d $'\0' file; do
     # Extract parent directory name
     parent_dir=$(dirname "$file")
-    parent_dir_name=$(basename "$parent_dir")
+    grantparent_dir=$(dirname "$parent_dir")
+    target_name=$(basename "$grantparent_dir")
 
     # Create destination directory
-    dest_subdir="$dest_dir/$parent_dir_name"
+    dest_subdir="$dest_dir/$target_name"
     mkdir -p "$dest_subdir"
 
     # Copy the file to the destination directory
