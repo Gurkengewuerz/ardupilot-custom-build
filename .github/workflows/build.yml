@@ -66,7 +66,7 @@ jobs:
         chmod +x Tools/scripts/custom_build.sh
         chmod +x Tools/scripts/copy_firmware.sh
         Tools/scripts/custom_build.sh
-        Tools/scripts/copy_firmware.sh /tmp/firmware
+        Tools/scripts/copy_firmware.sh /tmp/firmware ArduCopter
 
     - name: List files
       continue-on-error: true

@@ -9,6 +9,9 @@ src_dir="build/"
 rm -rf $dest_dir
 mkdir -p $dest_dir
 
+githash=$(git rev-parse --short HEAD | xargs)
+ver=$(Tools/PrintVersion.py ${2} | xargs)
+
 cp_file () {
     # Extract parent directory name
     parent_dir=$(dirname "$1")
@@ -19,8 +22,12 @@ cp_file () {
     dest_subdir="$dest_dir/$target_name"
     mkdir -p "$dest_subdir"
 
+    filename=$(basename -- "$file")
+    extension="${filename##*.}"
+    filename="${filename%.*}"
+
     # Copy the file to the destination directory
-    cp "$file" "$dest_subdir/$(basename "$file")"
+    cp "$file" "$dest_subdir/${filename}-${ver}-@${githash}.${extension}"
 }
 
 find "$src_dir" -type f -name "*.hex" -print0 | while IFS= read -r -d $'\0' file; do
