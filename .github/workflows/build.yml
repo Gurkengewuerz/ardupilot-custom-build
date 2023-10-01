@@ -1,0 +1,60 @@
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+
+  build_custom_boards:
+    runs-on: ubuntu-20.04
+    container: ardupilot/ardupilot-dev-base:latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: "recursive"
+
+    - name: Copy local boards
+      run: cp -rf customTargets/* ardupilot/libraries/AP_HAL_ChibiOS/hwdef/
+    - name: Copy custom tools
+      run: cp -rf tools/* ardupilot/Tools/scripts/
+    - name: Apply local patches
+      run: find "$(readlink -f patches/)" -type f -name "*.patch" | xargs -I {} sh -c 'echo "Applying {}"; git -C ardupilot/ apply {}'
+
+    - name: Prepare ccache timestamp
+      id: ccache_cache_timestamp
+      shell: bash
+      run: |
+        NOW=$(date -u +"%F-%T")
+        echo "timestamp=${NOW}" >> $GITHUB_OUTPUT
+    - name: ccache cache files
+      uses: actions/cache@v3
+      with:
+        path: ~/.ccache
+        key: ${{github.workflow}}-ccache-${{steps.ccache_cache_timestamp.outputs.timestamp}}
+        restore-keys: ${{github.workflow}}-ccache # restore ccache from either previous build on this branch or on master
+    - name: setup ccache
+      working-directory: ardupilot/
+      run: |
+        . .github/workflows/ccache.env
+    - name: test ${{matrix.config}} ${{ matrix.toolchain }}
+      shell: bash
+      working-directory: ardupilot/
+      run: |
+        git config --global --add safe.directory ${GITHUB_WORKSPACE}/ardupilot/
+        source ~/.bash_profile
+        BUILDROOT="/tmp/all.build"
+        PATH="/github/home/.local/bin:$PATH"
+        chmod +x Tools/scripts/custom_build.sh
+        Tools/scripts/custom_build.sh
+
+    - name: List files
+      continue-on-error: true
+      run: ls -lah /tmp/all.build/*
+    
+    - name: Archive .bin artifacts
+      uses: actions/upload-artifact@v3
+      with:
+          name: release
+          path: /tmp/all.build/
+          retention-days: 7
