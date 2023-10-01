@@ -1,0 +1,62 @@
+diff --git a/libraries/AP_OpenDroneID/AP_OpenDroneID.cpp b/libraries/AP_OpenDroneID/AP_OpenDroneID.cpp
+index f43289d248..0fa8edca72 100644
+--- a/libraries/AP_OpenDroneID/AP_OpenDroneID.cpp
++++ b/libraries/AP_OpenDroneID/AP_OpenDroneID.cpp
+@@ -282,7 +282,7 @@ void AP_OpenDroneID::send_static_out()
+     // we need to notify user if we lost system msg with operator location
+     if (now_ms - last_system_ms > 5000 && now_ms - last_lost_operator_msg_ms > 5000) {
+         last_lost_operator_msg_ms = now_ms;
+-        GCS_SEND_TEXT(MAV_SEVERITY_WARNING, "ODID: lost operator location");
++        // GCS_SEND_TEXT(MAV_SEVERITY_WARNING, "ODID: lost operator location");
+     }
+     
+     const uint32_t msg_spacing_ms = _mavlink_static_period_ms / 4;
+@@ -499,7 +499,16 @@ void AP_OpenDroneID::send_basic_id_message()
+     // note that packet is filled in by the GCS
+     need_send_basic_id |= dronecan_send_all;
+     if (_chan != MAV_CHAN_INVALID) {
++#ifdef CUSTOM_OPENDRONEID_UASID
++        const auto pkt = mavlink_open_drone_id_basic_id_t {
++            id_type: 1,
++            ua_type: 2,
++            {uas_id: CUSTOM_OPENDRONEID_UASID,}
++        };
++        mavlink_msg_open_drone_id_basic_id_send_struct(_chan, &pkt);
++#else
+         mavlink_msg_open_drone_id_basic_id_send_struct(_chan, &pkt_basic_id);
++#endif
+     }
+ }
+ 
+@@ -516,7 +525,15 @@ void AP_OpenDroneID::send_self_id_message()
+ {
+     need_send_self_id |= dronecan_send_all;
+     if (_chan != MAV_CHAN_INVALID) {
++#ifdef CUSTOM_OPENDRONEID_DESCRIPTION
++        const auto pkt = mavlink_open_drone_id_self_id_t {
++            description_type: 0,
++            {description: CUSTOM_OPENDRONEID_DESCRIPTION,}
++        };
++        mavlink_msg_open_drone_id_self_id_send_struct(_chan, &pkt);
++#else
+         mavlink_msg_open_drone_id_self_id_send_struct(_chan, &pkt_self_id);
++#endif
+     }
+ }
+ 
+@@ -542,7 +559,15 @@ void AP_OpenDroneID::send_operator_id_message()
+     need_send_operator_id |= dronecan_send_all;
+     // note that packet is filled in by the GCS
+     if (_chan != MAV_CHAN_INVALID) {
++#ifdef CUSTOM_OPENDRONEID_OPERATOR
++        const auto pkt = mavlink_open_drone_id_operator_id_t {
++            operator_id_type: 0,
++            {operator_id: CUSTOM_OPENDRONEID_OPERATOR,}
++        };
++        mavlink_msg_open_drone_id_operator_id_send_struct(_chan, &pkt);
++#else
+         mavlink_msg_open_drone_id_operator_id_send_struct(_chan, &pkt_operator_id);
++#endif
+     }
+ }
+ 
