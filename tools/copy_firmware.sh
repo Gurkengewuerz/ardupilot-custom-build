@@ -4,7 +4,7 @@ set -e
 set -x
 
 dest_dir="${1}"
-src_dir="ardupilot/build/"
+src_dir="build/"
 
 rm -rf $dest_dir
 mkdir -p $dest_dir
