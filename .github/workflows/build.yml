@@ -42,6 +42,7 @@ jobs:
       working-directory: ardupilot/
       run: |
         git config --global --add safe.directory ${GITHUB_WORKSPACE}/ardupilot/
+        . ~/.profile
         BUILDROOT="/tmp/all.build"
         PATH="/github/home/.local/bin:$PATH"
         chmod +x Tools/scripts/custom_build.sh
