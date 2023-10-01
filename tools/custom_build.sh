@@ -16,8 +16,9 @@ for dir in "$path"/*/; do
         echo "Processing directory: $dir_name"
 
         echo "Testing $dir_name build"
+        Tools/scripts/build_bootloaders.py $dir_name
         ./waf configure --board $dir_name
-        ./waf
+        ./waf copter
     fi
 done
 
