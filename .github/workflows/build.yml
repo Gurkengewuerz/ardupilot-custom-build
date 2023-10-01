@@ -14,6 +14,10 @@ jobs:
       with:
         submodules: "recursive"
 
+    - uses: oNaiPs/secrets-to-env-action@v1
+      with:
+        secrets: ${{ toJSON(vars) }}
+
     - name: Copy local boards
       run: cp -rf customTargets/* ardupilot/libraries/AP_HAL_ChibiOS/hwdef/
     - name: Copy custom tools
@@ -51,6 +55,7 @@ jobs:
         git config --global --add safe.directory ${GITHUB_WORKSPACE}/ardupilot/
         PATH="/github/home/.local/bin:$PATH"
         chmod +x Tools/scripts/custom_build.sh
+        chmod +x Tools/scripts/copy_firmware.sh
         Tools/scripts/custom_build.sh
         Tools/scripts/copy_firmware.sh /tmp/firmware
 
