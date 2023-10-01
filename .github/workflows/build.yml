@@ -42,18 +42,17 @@ jobs:
       working-directory: ardupilot/
       run: |
         git config --global --add safe.directory ${GITHUB_WORKSPACE}/ardupilot/
-        BUILDROOT="/tmp/all.build"
         PATH="/github/home/.local/bin:$PATH"
         chmod +x Tools/scripts/custom_build.sh
         Tools/scripts/custom_build.sh
 
     - name: List files
       continue-on-error: true
-      run: ls -lah /tmp/all.build/*
+      run: ls -lah ardupilot/build/*
     
     - name: Archive .bin artifacts
       uses: actions/upload-artifact@v3
       with:
           name: release
-          path: /tmp/all.build/
+          path: ardupilot/build/
           retention-days: 7
