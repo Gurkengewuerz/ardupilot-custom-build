@@ -21,6 +21,9 @@ jobs:
     - name: Apply local patches
       run: find "$(readlink -f patches/)" -type f -name "*.patch" | xargs -I {} sh -c 'echo "Applying {}"; git -C ardupilot/ apply {}'
 
+    - name: Install intelhex
+      run: pip3 install intelhex
+
     - name: Prepare ccache timestamp
       id: ccache_cache_timestamp
       shell: bash
@@ -45,14 +48,15 @@ jobs:
         PATH="/github/home/.local/bin:$PATH"
         chmod +x Tools/scripts/custom_build.sh
         Tools/scripts/custom_build.sh
+        Tools/scripts/copy_firmware.sh /tmp/firmware
 
     - name: List files
       continue-on-error: true
-      run: ls -lah ardupilot/build/*
+      run: ls -lah /tmp/firmware/*
     
     - name: Archive .bin artifacts
       uses: actions/upload-artifact@v3
       with:
           name: release
-          path: ardupilot/build/
+          path: /tmp/firmware/
           retention-days: 7
