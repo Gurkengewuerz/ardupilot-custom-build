@@ -8,7 +8,7 @@ jobs:
 
   build_custom_boards:
     runs-on: ubuntu-20.04
-    container: ardupilot/ardupilot-dev-base:latest
+    container: ardupilot/ardupilot-dev-chibios-clang:latest
     steps:
     - uses: actions/checkout@v4
       with:
@@ -42,7 +42,6 @@ jobs:
       working-directory: ardupilot/
       run: |
         git config --global --add safe.directory ${GITHUB_WORKSPACE}/ardupilot/
-        . ~/.profile
         BUILDROOT="/tmp/all.build"
         PATH="/github/home/.local/bin:$PATH"
         chmod +x Tools/scripts/custom_build.sh
