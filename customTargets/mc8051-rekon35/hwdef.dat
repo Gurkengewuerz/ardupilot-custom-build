@@ -2,6 +2,8 @@
 # for IFLIGHT_BLITZ_F7_AIO hardware.
 # thanks to betaflight for pin information
 
+DEFAULTGPIO OUTPUT LOW PULLDOWN
+
 # MCU class and specific type
 MCU STM32F7xx STM32F745xx
 
@@ -129,6 +131,7 @@ define STM32_I2C_USE_DMA FALSE
 # Dataflash setup
 SPIDEV dataflash SPI3 DEVID1 FLASH1_CS     MODE3 104*MHZ 104*MHZ
 SPIDEV bmi270    SPI1 DEVID1 GYRO1_CS      MODE3 2*MHZ 10*MHZ
+SPIDEV icm42688  SPI1 DEVID1 GYRO1_CS      MODE3 1*MHZ 16*MHZ
 
 define HAL_LOGGING_DATAFLASH_ENABLED 1
 
@@ -151,6 +154,7 @@ include ./extra_def.dat
 
 # one IMU: bmi270
 IMU BMI270 SPI:bmi270 ROTATION_ROLL_180_YAW_135
+IMU Invensensev3 SPI:icm42688 ROTATION_ROLL_180_YAW_315
 define HAL_DEFAULT_INS_FAST_SAMPLE 1
 
 # Motor order implies Betaflight/X for standard ESCs
